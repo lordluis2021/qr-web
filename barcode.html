@@ -20,11 +20,10 @@
     }
 
     img {
-      max-width: 90vw;
-      max-height: 80vh;
-      height: auto;
-      width: auto;
       display: block;
+      /* Máximo 80% del ancho de pantalla, pero nunca más de 320px */
+      width: min(80vw, 320px);
+      height: auto;
     }
 
     .error {
@@ -51,8 +50,10 @@
       }
 
       const img = document.createElement('img');
-      // Código de barras Code128 desde Orca
-      img.src = 'https://barcode.orcascan.com/?type=code128&data=' + encodeURIComponent(code);
+      // Código de barras Code128 desde Orca, en PNG y con padding fijo
+      img.src =
+        'https://barcode.orcascan.com/?type=code128&format=png&padding=10&data=' +
+        encodeURIComponent(code);
       img.alt = 'Código de barras';
 
       container.appendChild(img);
