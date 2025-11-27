@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Código de barras dinámico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px 20px 28px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      max-width: 420px;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      margin: 0 0 12px;
+    }
+
+    .code-text {
+      font-size: 0.9rem;
+      color: #555;
+      margin: 0 0 16px;
+      word-break: break-all;
+    }
+
+    .barcode-wrapper {
+      margin: 12px auto 0;
+    }
+
+    .barcode-wrapper img {
+      max-width: 320px;
+      width: 100%;
+      height: auto;
+    }
+
+    .error {
+      color: #c00;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .hint {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin: 0 0 10px;
+      font-size: 0.9rem;
+    }
+
+    button {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: #0070f3;
+      color: #fff;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Código de barras</h1>
+    <p class="code-text" id="codeText"></p>
+
+    <div class="barcode-wrapper" id="barcodeWrapper" style="display: none;">
+      <img id="barcodeImage" alt="Código de barras" />
+    </div>
+
+    <p class="error" id="errorMsg" style="display: none;"></p>
+
+    <!-- Fallback para probar manualmente si no viene ?code= -->
+    <div id="manualInput" style="margin-top: 16px;">
+      <input type="text" id="codeInput" placeholder="Escribe un código y genera el código de barras" />
+      <button type="button" onclick="generateFromInput()">Generar código de barras</button>
+    </div>
+
+    <p class="hint">
+      Puedes llamar esta página como:<br />
+      <code>?code=ABC123XYZ</code>
+    </p>
+  </div>
+
+  <script>
+    function renderCode(code) {
+      const codeText = document.getElementById('codeText');
+      const barcodeImage = document.getElementById('barcodeImage');
+      const barcodeWrapper = document.getElementById('barcodeWrapper');
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (!code) {
+        codeText.textContent = 'No se recibió ningún código en la URL.';
+        barcodeWrapper.style.display = 'none';
+        errorMsg.style.display = 'block';
+        errorMsg.textContent = 'Añade ?code=TU_CODIGO en la URL o usa el campo de texto.';
+        return;
+      }
+
+      // Limpiar errores previos
+      errorMsg.style.display = 'none';
+
+      // Mostrar el código
+      codeText.textContent = 'Código: ' + code;
+
+      // Construir URL de Orca Scan como código de barras Code128
+      const orcaUrl =
+        'https://barcode.orcascan.com/?type=code128&data=' + encodeURIComponent(code);
+
+      barcodeImage.src = orcaUrl;
+      barcodeWrapper.style.display = 'block';
+    }
+
+    function generateFromInput() {
+      const input = document.getElementById('codeInput').value.trim();
+      if (!input) return;
+
+      // Actualizamos también la URL en la barra del navegador (sin recargar)
+      const url = new URL(window.location.href);
+      url.searchParams.set('code', input);
+      window.history.replaceState({}, '', url.toString());
+
+      renderCode(input);
+    }
+
+    (function init() {
+      const params = new URLSearchParams(window.location.search);
+      // Puedes usar ?code= o ?data=; ambas funcionan
+      const code = params.get('code') || params.get('data');
+      renderCode(code);
+    })();
+  </script>
+</body>
+</html>
