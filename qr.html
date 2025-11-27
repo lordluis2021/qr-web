@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>QR dinámico</title>
+  <title>Código de barras dinámico</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
@@ -39,12 +39,12 @@
       word-break: break-all;
     }
 
-    .qr-wrapper {
+    .barcode-wrapper {
       margin: 12px auto 0;
     }
 
-    .qr-wrapper img {
-      max-width: 260px;
+    .barcode-wrapper img {
+      max-width: 320px;
       width: 100%;
       height: auto;
     }
@@ -88,72 +88,7 @@
 </head>
 <body>
   <div class="card">
-    <h1>Código QR</h1>
+    <h1>Código de barras</h1>
     <p class="code-text" id="codeText"></p>
 
-    <div class="qr-wrapper" id="qrWrapper" style="display: none;">
-      <img id="qrImage" alt="Código QR" />
-    </div>
-
-    <p class="error" id="errorMsg" style="display: none;"></p>
-
-    <!-- Fallback para probar manualmente si no viene ?code= -->
-    <div id="manualInput" style="margin-top: 16px;">
-      <input type="text" id="codeInput" placeholder="Escribe un código y genera el QR" />
-      <button type="button" onclick="generateFromInput()">Generar QR</button>
-    </div>
-
-    <p class="hint">
-      Puedes llamar esta página como:<br />
-      <code>?code=ABC123XYZ</code>
-    </p>
-  </div>
-
-  <script>
-    function renderCode(code) {
-      const codeText = document.getElementById('codeText');
-      const qrImage = document.getElementById('qrImage');
-      const qrWrapper = document.getElementById('qrWrapper');
-      const errorMsg = document.getElementById('errorMsg');
-
-      if (!code) {
-        codeText.textContent = 'No se recibió ningún código en la URL.';
-        qrWrapper.style.display = 'none';
-        errorMsg.style.display = 'block';
-        errorMsg.textContent = 'Añade ?code=TU_CODIGO en la URL o usa el campo de texto.';
-        return;
-      }
-
-      // Limpiar errores previos
-      errorMsg.style.display = 'none';
-
-      // Mostrar el código
-      codeText.textContent = 'Código: ' + code;
-
-      // Construir URL de Orca Scan (QR explícito)
-      const orcaUrl =
-        'https://barcode.orcascan.com/?type=qr&data=' + encodeURIComponent(code);
-
-      qrImage.src = orcaUrl;
-      qrWrapper.style.display = 'block';
-    }
-
-    function generateFromInput() {
-      const input = document.getElementById('codeInput').value.trim();
-      if (!input) return;
-      // Actualizamos también la URL en la barra del navegador (sin recargar)
-      const url = new URL(window.location.href);
-      url.searchParams.set('code', input);
-      window.history.replaceState({}, '', url.toString());
-      renderCode(input);
-    }
-
-    (function init() {
-      const params = new URLSearchParams(window.location.search);
-      // Puedes usar ?code= o ?data=; ambas funcionan
-      const code = params.get('code') || params.get('data');
-      renderCode(code);
-    })();
-  </script>
-</body>
-</html>
+    <div class="barcode-wrapper" id="barcodeWrapper" style="display: none;
